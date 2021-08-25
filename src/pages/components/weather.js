@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Utils from "../helpers/helpers.js";
+import "../css/weather.scss";
+import {FaSearch} from 'react-icons/fa';
 
-const Weather = () => {
+const Weather = (props) => {
 
   const [location, setLocation] = useState("New York");
   const [minValue, setMinValue] = useState("");
@@ -51,49 +53,59 @@ const Weather = () => {
   }
 
   function insertMinValue(value) {
-    if(value) setMins([...mins, Utils.kelvinToFahrenheit(value)]);
+    if(value) setMins([...mins, props.metric ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value)]);
   }
   function insertMaxValue(value) {
-    if(value) setMaxes([...maxes, Utils.kelvinToFahrenheit(value)]);
+    if(value) setMaxes([...maxes, props.metric ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value)]);
   }
   
-  return <div>
-    <div>
-      <form id="weatherForm">
-        <input type="text" value={location} onChange={changeLocation}></input>
-      </form>
-      <button type="submit" form="weatherForm" value="Fetch" onClick={(e) => {
-        e.preventDefault();
-        fetchData();
-      }}>Fetch</button>
-      <ol>
-        {data.list && data.list
-          .filter(weather => filterByTime(weather.dt) === 15)
-          .map(item => {
-            //setMins(e => [...e, item.main.temp_min])
-            return <li key={item.dt}>
-              <img src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} />
-              <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
-              <p>{Utils.kelvinToCelsius(item.main.temp)}°C</p>
-              <p>{Utils.kelvinToFahrenheit(item.main.temp)}°F</p>
-            </li>
-          })
-        }
-      </ol>
-      {data &&
-        <div>
-          <input type="number" value={minValue} onChange={changeMinValue}></input>
-          <button onClick={() => insertMinValue(minValue)}>Insert New Min Value</button>
-          <input type="number" value={maxValue} onChange={changeMaxValue}></input>
-          <button onClick={() => insertMaxValue(maxValue)}>Insert New Max Value</button>
-          <p>Min Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMin(mins))}°F, {Utils.kelvinToCelsius(Utils.showMin(mins))}°C</p>
-          <p>Max Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMax(maxes))}°F, {Utils.kelvinToCelsius(Utils.showMax(maxes))}°C</p>
-          <p>Mean Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F, {Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C</p>
-          <p>Mode Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F, {Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C</p>
-        </div>
-      } 
+  return (
+    <div className="weather">
+      <div>
+        <form id="weatherForm">
+          <input type="text" value={location} onChange={changeLocation}></input>
+          <button className="searchButton" type="submit" form="weatherForm" value="Fetch" onClick={(e) => {
+            e.preventDefault();
+            fetchData();
+        }}><FaSearch /></button>
+        </form>
+        {console.log("Celsius" , Utils.kelvinToCelsius(26.85))}
+        {data && <h1>{location}</h1>}
+        <ul className="weatherList">
+          {data.list && data.list
+            .filter(weather => filterByTime(weather.dt) === 15)
+            .map(item => {
+              //console.log(item);
+              //setMins(e => [...e, item.main.temp_min])
+              return <li className="listItem" key={item.dt}>
+                <img src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} />
+                <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
+                <p>{props.metric ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
+                <p>{item.weather[0].main}</p>
+              </li>
+            })
+          }
+        </ul>
+        {data &&
+          <div className="tracker">
+            <div className="temps">
+              <p>Min: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMin(mins))}°F` : `${Utils.kelvinToCelsius(Utils.showMin(mins))}°C`}</p>
+              <p>Max: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMax(maxes))}°F` : `${Utils.kelvinToCelsius(Utils.showMax(maxes))}°C`}</p>
+              <p>Mean: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C`}</p>
+              <p>Mode: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C`}</p>
+            </div>
+            <div>
+              <p>Data is based on next 5 days</p>
+              <input type="number" value={minValue} onChange={changeMinValue}></input>
+              <button onClick={() => insertMinValue(minValue)}>Insert New Min Value</button>
+              <input type="number" value={maxValue} onChange={changeMaxValue}></input>
+              <button onClick={() => insertMaxValue(maxValue)}>Insert New Max Value</button>
+            </div>
+          </div>
+        } 
+      </div>
     </div>
-  </div>
+  )
 }
 
 export default Weather;

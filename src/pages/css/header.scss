@@ -1,0 +1,11 @@
+@import './base.scss';
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  //background-color: $accent-color;
+  padding: 1em;
+  color:#eee;
+}
+

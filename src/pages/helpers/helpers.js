@@ -13,6 +13,14 @@ export default class Helpers {
     return Math.round((kelvinTemp - 273) * 9 / 5 + 32)
   }
 
+  static celsiusToKelvin(celsiusTemp) {
+    return celsiusTemp + 273;
+  }
+
+  static fahrenheitToKelvin(fahrenheitTemp) {
+    return ((fahrenheitTemp-32) * 5) / 9 + 273;
+  }
+
   static showMin(arr) {
     return _.min(arr);
   }
@@ -47,7 +55,7 @@ export default class Helpers {
         highestKey = key;
       }
     }
-    
+
     return highestKey;
   }
 }
