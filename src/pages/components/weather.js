@@ -4,10 +4,25 @@ import Utils from "../helpers/helpers.js";
 const Weather = () => {
 
   const [location, setLocation] = useState("New York");
-  const [value, setValue] = useState("");
+  const [minValue, setMinValue] = useState("");
+  const [maxValue, setMaxValue] = useState("");
   const [data, setData] = useState("");
   const [mins, setMins] = useState([]);
+  const [maxes, setMaxes] = useState([]);
 
+  useEffect(() => {
+    if(data) {
+
+      let newMins = [], newMaxes = [];
+      data.list.forEach(item => {
+        newMins.push(item.main.temp_min);
+        newMaxes.push(item.main.temp_max);
+      })
+      setMins(newMins);
+      setMaxes(newMaxes);
+    }
+
+  }, [data])
 
   async function fetchData() {
     return fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${process.env.GATSBY_WEATHER_API_KEY}`)
@@ -26,14 +41,20 @@ const Weather = () => {
     setLocation(event.target.value);
   }
 
-  function changeValue(event) {
+  function changeMinValue(event) {
     let newVal = event.target.value;
-    if(newVal != null || newVal != undefined) setValue(newVal);
+    if(newVal != null || newVal != undefined) setMinValue(newVal);
+  }
+  function changeMaxValue(event) {
+    let newVal = event.target.value;
+    if(newVal != null || newVal != undefined) setMaxValue(newVal);
   }
 
-  function insertValue(value) {
-    if(value) setMins([...mins, value]);
-    console.log(mins);
+  function insertMinValue(value) {
+    if(value) setMins([...mins, Utils.kelvinToFahrenheit(value)]);
+  }
+  function insertMaxValue(value) {
+    if(value) setMaxes([...maxes, Utils.kelvinToFahrenheit(value)]);
   }
   
   return <div>
@@ -45,12 +66,10 @@ const Weather = () => {
         e.preventDefault();
         fetchData();
       }}>Fetch</button>
-      {console.log(Utils.showMode([1,1,2,3,4,4,4]))}
       <ol>
         {data.list && data.list
           .filter(weather => filterByTime(weather.dt) === 15)
           .map(item => {
-            console.log(item);
             //setMins(e => [...e, item.main.temp_min])
             return <li key={item.dt}>
               <img src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} />
@@ -61,14 +80,18 @@ const Weather = () => {
           })
         }
       </ol>
-      <div>
-        <input type="number" value={value} onChange={changeValue}></input>
-        <button onClick={() => insertValue(value)}>Insert Value</button>
-        <p>Min Temp: </p>
-        <p>Max Temp: </p>
-        <p>Mean Temp: </p>
-        <p>Mode Temp: </p>
-      </div>
+      {data &&
+        <div>
+          <input type="number" value={minValue} onChange={changeMinValue}></input>
+          <button onClick={() => insertMinValue(minValue)}>Insert New Min Value</button>
+          <input type="number" value={maxValue} onChange={changeMaxValue}></input>
+          <button onClick={() => insertMaxValue(maxValue)}>Insert New Max Value</button>
+          <p>Min Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMin(mins))}°F, {Utils.kelvinToCelsius(Utils.showMin(mins))}°C</p>
+          <p>Max Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMax(maxes))}°F, {Utils.kelvinToCelsius(Utils.showMax(maxes))}°C</p>
+          <p>Mean Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F, {Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C</p>
+          <p>Mode Temp over 5 days: {Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F, {Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C</p>
+        </div>
+      } 
     </div>
   </div>
 }
