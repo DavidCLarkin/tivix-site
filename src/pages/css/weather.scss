@@ -9,6 +9,12 @@
   position: relative;
   overflow: hidden;
 
+  .headers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
   .weatherList {
     display: flex;
     list-style: none;

@@ -14,11 +14,12 @@ export default class Helpers {
   }
 
   static celsiusToKelvin(celsiusTemp) {
-    return celsiusTemp + 273;
+    let temp = Number(celsiusTemp);
+    return temp + 273;
   }
 
   static fahrenheitToKelvin(fahrenheitTemp) {
-    return ((fahrenheitTemp-32) * 5) / 9 + 273;
+    return Number(((fahrenheitTemp-32) * 5) / 9 + 273);
   }
 
   static showMin(arr) {

@@ -11,10 +11,11 @@ const Weather = (props) => {
   const [data, setData] = useState("");
   const [mins, setMins] = useState([]);
   const [maxes, setMaxes] = useState([]);
+  const [fahrenheit, setFahrenheit] = useState(true);
+
 
   useEffect(() => {
     if(data) {
-
       let newMins = [], newMaxes = [];
       data.list.forEach(item => {
         newMins.push(item.main.temp_min);
@@ -32,6 +33,10 @@ const Weather = (props) => {
     .then(data => setData(data))
     .then(data => {sessionStorage.setItem("WeatherData", data)})
     .catch(err => console.log(err))
+  }
+
+  function changeMetric() {
+    setFahrenheit(!fahrenheit);
   }
 
   function filterByTime(time) {
@@ -53,15 +58,23 @@ const Weather = (props) => {
   }
 
   function insertMinValue(value) {
-    if(value) setMins([...mins, props.metric ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value)]);
+    if(value) setMins([...mins, (fahrenheit ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value))]);
   }
   function insertMaxValue(value) {
-    if(value) setMaxes([...maxes, props.metric ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value)]);
+    if(value) setMaxes([...maxes, (fahrenheit ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value))]);
   }
   
   return (
     <div className="weather">
       <div>
+        <div className="headers">
+          <h1>Weather</h1>
+          <label className="switch">
+            <p className="sliderText">{fahrenheit ? "°F" : "°C"}</p>
+            <input type="checkbox" onClick={changeMetric}/>
+            <span className="slider round"></span>
+          </label>
+        </div>
         <form id="weatherForm">
           <input type="text" value={location} onChange={changeLocation}></input>
           <button className="searchButton" type="submit" form="weatherForm" value="Fetch" onClick={(e) => {
@@ -69,7 +82,6 @@ const Weather = (props) => {
             fetchData();
         }}><FaSearch /></button>
         </form>
-        {console.log("Celsius" , Utils.kelvinToCelsius(26.85))}
         {data && <h1>{location}</h1>}
         <ul className="weatherList">
           {data.list && data.list
@@ -80,7 +92,7 @@ const Weather = (props) => {
               return <li className="listItem" key={item.dt}>
                 <img src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} />
                 <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
-                <p>{props.metric ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
+                <p>{fahrenheit ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
                 <p>{item.weather[0].main}</p>
               </li>
             })
@@ -89,10 +101,10 @@ const Weather = (props) => {
         {data &&
           <div className="tracker">
             <div className="temps">
-              <p>Min: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMin(mins))}°F` : `${Utils.kelvinToCelsius(Utils.showMin(mins))}°C`}</p>
-              <p>Max: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMax(maxes))}°F` : `${Utils.kelvinToCelsius(Utils.showMax(maxes))}°C`}</p>
-              <p>Mean: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C`}</p>
-              <p>Mode: {props.metric ? `${Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C`}</p>
+              <p>Min: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMin(mins))}°F` : `${Utils.kelvinToCelsius(Utils.showMin(mins))}°C`}</p>
+              <p>Max: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMax(maxes))}°F` : `${Utils.kelvinToCelsius(Utils.showMax(maxes))}°C`}</p>
+              <p>Mean: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C`}</p>
+              <p>Mode: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C`}</p>
             </div>
             <div>
               <p>Data is based on next 5 days</p>
