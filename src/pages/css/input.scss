@@ -1,0 +1,14 @@
+@import "./base.scss";
+
+.input {
+  border-radius: 5px;
+  border: none;
+  height: $inputHeight;
+  padding: 0;
+  text-indent: 10px;
+  //filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.1));    
+
+  &:focus {
+    outline-color: $accent-color;
+  }
+}

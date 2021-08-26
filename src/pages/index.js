@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Header from "./components/header.js";
 import Weather from "./components/weather.js";
 import "./css/base.scss";
 import bg1 from "../assets/images/tabbied1.png";

@@ -9,57 +9,57 @@
   position: relative;
   overflow: hidden;
 
+  .title {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    font-style: italic;
+    font-weight: bold;
+  }
+
   .headers {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
+
+    .form {
+      display: flex;
+      align-items: center;
+    }
+    .metric {
+      p {
+        margin: 0;
+      }
+    }
   }
 
   .weatherList {
     display: flex;
     list-style: none;
-    //border: solid 1px black;
+    padding: 0;
     .listItem {
       width: 20%;
-      //border: solid 1px black;
       text-align: center;
-      margin-right: 0.5em;
-      padding: 10px;
+      padding: 20px;
       color: $font-color;
       border-radius: $border-radius;
-      background: rgb(255, 255, 255, 0.8);
+      background: rgb(255, 255, 255, 1);
+      filter: drop-shadow(4px 4px 2px rgba(0,0,0,0.1));    
+      margin: 0 10px;
     }
-  }
-  
-  #weatherForm {
-    margin-top: 2em;
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .searchButton {
-    margin-left: 5px;
-    display: flex;
-    height: 2em;
-    width: 8em;
-    background-color: $accent-color;
-    border: none;
-    color: #eee;
-  
-  
-    svg {
-      align-self: center;
-      margin: 0 auto;
-    }
-  
-    &:hover {
-      background-color: $dark-accent-color;
-    }
+
   }
 
+  .dataChanger {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 5em;
+  }
   .tracker {
     display: flex;
     flex-direction: column;
+    margin-top: 20px;
 
     .temps {
       display:flex;
@@ -67,9 +67,100 @@
       margin: 20px auto;
 
       p {
-        margin-right: 2em;
+        padding: 0 10px;
+        display: flex;
+        text-align: center;
       }
     }
   }
 
+  .dataAdder {
+    display: flex;
+    flex-direction: row;
+    margin-top: 1em;
+  }
+
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.sliderText {
+  font-weight: bold;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+  background-color: #ccc;
+
+  &:before {
+    position: absolute;
+    content: "";
+    text-align: center;
+    height: 30px;
+    width: 30px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.25s;
+  }
+}
+
+
+input:checked + .slider {
+  background-color: $accent-color;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .weather {
+    padding: 1em;
+
+    .weatherList {
+      flex-direction: column;
+      align-items: center;
+
+      .listItem {
+        width: 70%;
+        margin-bottom: 1em;
+      }
+    }
+
+    .headers {
+      flex-direction: column;
+      align-items: center;
+      div {
+        margin: 1em auto;
+      }
+    }
+  }
 }

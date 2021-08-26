@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import Utils from "../helpers/helpers.js";
 import "../css/weather.scss";
 import {FaSearch} from 'react-icons/fa';
+import Button from "../components/button.js";
+import Input from "../components/input.js";
+import { after } from "lodash";
 
-const Weather = (props) => {
+const Weather = () => {
 
-  const [location, setLocation] = useState("New York");
+  const [location, setLocation] = useState("");
   const [minValue, setMinValue] = useState("");
   const [maxValue, setMaxValue] = useState("");
   const [data, setData] = useState("");
@@ -17,12 +20,18 @@ const Weather = (props) => {
   useEffect(() => {
     if(data) {
       let newMins = [], newMaxes = [];
-      data.list.forEach(item => {
-        newMins.push(item.main.temp_min);
-        newMaxes.push(item.main.temp_max);
-      })
-      setMins(newMins);
-      setMaxes(newMaxes);
+      try {
+        data != "" && data.list.forEach(item => {
+          newMins.push(item.main.temp_min);
+          newMaxes.push(item.main.temp_max);
+        })
+        setMins(newMins);
+        setMaxes(newMaxes);
+      }
+      catch(error) {
+        console.log("error, no data", error);
+      }
+
     }
 
   }, [data])
@@ -64,34 +73,37 @@ const Weather = (props) => {
     if(value) setMaxes([...maxes, (fahrenheit ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value))]);
   }
   
+  
   return (
     <div className="weather">
       <div>
-        <div className="headers">
-          <h1>Weather</h1>
-          <label className="switch">
-            <p className="sliderText">{fahrenheit ? "°F" : "°C"}</p>
-            <input type="checkbox" onClick={changeMetric}/>
-            <span className="slider round"></span>
-          </label>
-        </div>
-        <form id="weatherForm">
-          <input type="text" value={location} onChange={changeLocation}></input>
-          <button className="searchButton" type="submit" form="weatherForm" value="Fetch" onClick={(e) => {
-            e.preventDefault();
-            fetchData();
-        }}><FaSearch /></button>
-        </form>
-        {data && <h1>{location}</h1>}
+        <section className="headers">
+          <div className="form">
+            <form id="weatherForm">
+              <Input type="text" value={location} placeholder={"Search..."} handleChange={changeLocation}/>
+              <Button btnTitle={<FaSearch />} handleClick={(e) => {
+                e.preventDefault();
+                fetchData();
+              }}></Button>
+            </form>
+          </div>
+          <div className="metric">
+            <p>Metric: {fahrenheit ? `°F` : `°C`}</p>
+            <label className="switch">
+              <input type="checkbox" onClick={changeMetric}/>
+              <span className="slider round"></span>
+            </label>
+          </div>
+        </section>
+
+        {data && <h1 className="title">{location}</h1>}
         <ul className="weatherList">
           {data.list && data.list
-            .filter(weather => filterByTime(weather.dt) === 15)
+            .filter(weather => filterByTime(weather.dt) === 12)
             .map(item => {
-              //console.log(item);
-              //setMins(e => [...e, item.main.temp_min])
               return <li className="listItem" key={item.dt}>
-                <img src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} />
                 <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
+                <img src={Utils.convertIdToSVG(item.weather[0].icon)} alt={item.weather[0].main} />
                 <p>{fahrenheit ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
                 <p>{item.weather[0].main}</p>
               </li>
@@ -106,13 +118,17 @@ const Weather = (props) => {
               <p>Mean: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMean(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMean(maxes.concat(mins)))}°C`}</p>
               <p>Mode: {fahrenheit ? `${Utils.kelvinToFahrenheit(Utils.showMode(maxes.concat(mins)))}°F` : `${Utils.kelvinToCelsius(Utils.showMode(maxes.concat(mins)))}°C`}</p>
             </div>
-            <div>
+            <div className="dataChanger">
               <p>Data is based on next 5 days</p>
-              <input type="number" value={minValue} onChange={changeMinValue}></input>
-              <button onClick={() => insertMinValue(minValue)}>Insert New Min Value</button>
-              <input type="number" value={maxValue} onChange={changeMaxValue}></input>
-              <button onClick={() => insertMaxValue(maxValue)}>Insert New Max Value</button>
-            </div>
+                <div className="dataAdder">
+                  <Input type={"number"} value={minValue} placeholder={"Enter Min"} handleChange={changeMinValue}/>
+                  <Button handleClick={() => insertMinValue(minValue)} btnTitle={"Add New Min"}/>
+                </div>
+                <div className="dataAdder">
+                  <Input type={"number"} value={maxValue} placeholder={"Enter Max"} handleChange={changeMaxValue}/>
+                  <Button handleClick={() => insertMaxValue(maxValue)} btnTitle={"Add New Max"}/>
+                </div>
+              </div>
           </div>
         } 
       </div>

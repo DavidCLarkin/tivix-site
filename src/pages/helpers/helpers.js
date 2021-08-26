@@ -1,6 +1,47 @@
+import sunny from "../../assets/images/animated/sunny.svg";
+import littleCloudy from "../../assets/images/animated/littleCloudy.svg";
+import clouds from "../../assets/images/animated/overcast.svg";
+import shower from "../../assets/images/animated/shower.svg";
+import rain from "../../assets/images/animated/rain.svg";
+import thunder from "../../assets/images/animated/thunder.svg";
+import snow from "../../assets/images/animated/snow.svg";
+import mist from "../../assets/images/animated/mist.svg";
 var _ = require('lodash');
 
 export default class Helpers {
+
+  static convertIdToSVG(id) {
+    switch(id) {
+      case "01d":
+      case "01n": return sunny 
+        
+      case "02d":
+      case "02n": return littleCloudy
+
+      case "03d":
+      case "03n": return clouds
+
+      case "04d":
+      case "04n":
+      case "09d":
+      case "09n": return shower
+
+      case "10d":
+      case "10n": return rain
+
+      case "11d":
+      case "11n": return thunder
+
+      case "13d":
+      case "13n": return snow
+
+      case "50d":
+      case "50n": return mist
+
+      default: return 'error'
+    }
+  }
+
   static convertUNIX(unixTime) {
     return new Date(unixTime * 1000);
   }
@@ -25,6 +66,14 @@ export default class Helpers {
   static showMin(arr) {
     return _.min(arr);
   }
+  
+  static titleCase(str) {
+   var splitStr = str.toLowerCase().split(' ');
+   for (var i = 0; i < splitStr.length; i++) {
+       splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+   }
+   return splitStr.join(' '); 
+}
 
   static showMax(arr) {
     return _.max(arr);

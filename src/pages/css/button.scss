@@ -1,0 +1,27 @@
+@import "./base.scss";
+
+.button {
+  margin-left: 5px;
+  width: 8em;
+  border: none;
+  color: #2E2E2E;
+  text-align: center;
+  background-color: $accent-color;
+  border-radius: 5px;
+  transition: 0.4s;
+  padding: 0;
+  height: $inputHeight;
+  filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.1));    
+
+  svg {
+    display:inline-block;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: $dark-accent-color;
+    color: $opposite-font-color;
+  }
+
+}
