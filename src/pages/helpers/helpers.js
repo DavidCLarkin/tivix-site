@@ -87,6 +87,7 @@ export default class Helpers {
     return sum / arr.length;
   }
 
+  
   static showMode(arr) {
     let max = 0, frequency = {}, highestKey = 0;
     arr.sort();
@@ -108,4 +109,5 @@ export default class Helpers {
 
     return highestKey;
   }
+  
 }
