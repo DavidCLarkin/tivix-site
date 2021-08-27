@@ -4,24 +4,27 @@ import "../css/weather.scss";
 import {FaSearch} from 'react-icons/fa';
 import Button from "../components/button.js";
 import Input from "../components/input.js";
-import { after } from "lodash";
+import Slide from "react-reveal/Slide";
+import wind from "../../assets/images/animated/wind.svg";
+import compass from "../../assets/images/animated/compass.svg";
 
 const Weather = () => {
 
   const [location, setLocation] = useState("");
   const [minValue, setMinValue] = useState("");
   const [maxValue, setMaxValue] = useState("");
-  const [data, setData] = useState("");
+  const [data, setData] = useState(null);
   const [mins, setMins] = useState([]);
   const [maxes, setMaxes] = useState([]);
   const [fahrenheit, setFahrenheit] = useState(true);
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
     if(data) {
       let newMins = [], newMaxes = [];
       try {
-        data != "" && data.list.forEach(item => {
+        data !== "" && data.list.forEach(item => {
           newMins.push(item.main.temp_min);
           newMaxes.push(item.main.temp_max);
         })
@@ -41,6 +44,7 @@ const Weather = () => {
     .then(results => results.json())
     .then(data => setData(data))
     .then(data => {sessionStorage.setItem("WeatherData", data)})
+    .then(setLoading(false))
     .catch(err => console.log(err))
   }
 
@@ -59,11 +63,11 @@ const Weather = () => {
 
   function changeMinValue(event) {
     let newVal = event.target.value;
-    if(newVal != null || newVal != undefined) setMinValue(newVal);
+    if(newVal !== null || newVal !== undefined) setMinValue(newVal);
   }
   function changeMaxValue(event) {
     let newVal = event.target.value;
-    if(newVal != null || newVal != undefined) setMaxValue(newVal);
+    if(newVal !== null || newVal !== undefined) setMaxValue(newVal);
   }
 
   function insertMinValue(value) {
@@ -72,7 +76,6 @@ const Weather = () => {
   function insertMaxValue(value) {
     if(value) setMaxes([...maxes, (fahrenheit ? Utils.fahrenheitToKelvin(value) : Utils.celsiusToKelvin(value))]);
   }
-  
   
   return (
     <div className="weather">
@@ -96,16 +99,28 @@ const Weather = () => {
           </div>
         </section>
 
-        {data && <h1 className="title">{location}</h1>}
+        {loading ? <div className="loadingDiv">Make a search request and it'll load here!</div> :
+        data && <h1 className="title">{location}</h1>}
         <ul className="weatherList">
-          {data.list && data.list
+          {(data?.list !== undefined || null) && data.list
             .filter(weather => filterByTime(weather.dt) === 12)
             .map(item => {
+              console.log(item);
               return <li className="listItem" key={item.dt}>
-                <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
-                <img src={Utils.convertIdToSVG(item.weather[0].icon)} alt={item.weather[0].main} />
-                <p>{fahrenheit ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
-                <p>{item.weather[0].main}</p>
+                <div className="frontCard">
+                  <p>{Utils.convertUNIX(item.dt).toLocaleDateString("en-US", {weekday: "long", month: "long", day:"numeric"})}</p>
+                  <img className="iconSvg" src={Utils.convertIdToSVG(item.weather[0].icon)} alt={item.weather[0].main} />
+                  <p>{fahrenheit ? `${Utils.kelvinToFahrenheit(item.main.temp)}°F` : `${Utils.kelvinToCelsius(item.main.temp)}°C`}</p>
+                  <p>{item.weather[0].main}</p>
+                </div>
+                <div className="backCard">
+                  <p>Humidity: {item.main.humidity}%</p>
+                  <p>Wind</p>
+                  <img src={wind} alt="wind"/>
+                  <p>{(item.wind.speed)} mph</p>
+                  <p>Direction</p>
+                  <img className="directionSvg" src={compass} alt="direction" style={{transform:`rotate(${item.wind.deg}deg)`}}></img>
+                </div>
               </li>
             })
           }
@@ -120,6 +135,7 @@ const Weather = () => {
             </div>
             <div className="dataChanger">
               <p>Data is based on next 5 days</p>
+              <div className="dataInputs">
                 <div className="dataAdder">
                   <Input type={"number"} value={minValue} placeholder={"Enter Min"} handleChange={changeMinValue}/>
                   <Button handleClick={() => insertMinValue(minValue)} btnTitle={"Add New Min"}/>
@@ -129,8 +145,9 @@ const Weather = () => {
                   <Button handleClick={() => insertMaxValue(maxValue)} btnTitle={"Add New Max"}/>
                 </div>
               </div>
+            </div>
           </div>
-        } 
+        }
       </div>
     </div>
   )

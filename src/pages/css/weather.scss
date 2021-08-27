@@ -4,10 +4,16 @@
   background-color: rgba(255, 255, 255, 0.363);
   backdrop-filter: blur(5px);
   border-radius: $border-radius;
-  margin-top: 4em;
+  margin-top: 1em;
   padding: 2em;
   position: relative;
   overflow: hidden;
+
+  .loadingDiv {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+  }
 
   .title {
     display: flex;
@@ -43,9 +49,43 @@
       padding: 20px;
       color: $font-color;
       border-radius: $border-radius;
-      background: rgb(255, 255, 255, 1);
+      //background: rgb(255, 255, 255, 1);
       filter: drop-shadow(4px 4px 2px rgba(0,0,0,0.1));    
       margin: 0 10px;
+      transition: 0.2s ease-in-out;
+      cursor: pointer;
+      background: linear-gradient(30deg, white 50%, $dark-accent-color 50%);
+      background-size: 200% 185%;
+      background-position:bottom left;
+      transition: all 0.75s ease;
+
+
+      &:hover, &:focus {
+        transform: scale(1.05);
+        //background-color: $dark-accent-color;
+        background-position:top right;
+
+        .backCard { 
+          display: unset;
+          color: white;
+
+        }
+        .frontCard {
+          display: none;
+        }
+      } 
+
+      .frontCard {
+        display: unset;
+      }
+
+      .backCard {
+        display: none; 
+        img {
+          height: 60px;
+          width: auto;
+        }
+      }
     }
 
   }
@@ -54,17 +94,26 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    margin-bottom: 5em;
+    margin-bottom: 2em;
+
+    .dataInputs {
+      display: flex;
+      flex-direction: row;
+
+      .dataAdder {
+        margin: auto 10px;
+      }
+    }
   }
   .tracker {
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin-top: 10px;
 
     .temps {
       display:flex;
       flex-direction: row;
-      margin: 20px auto;
+      margin: 0 auto;
 
       p {
         padding: 0 10px;
@@ -141,7 +190,7 @@ input:checked + .slider:before {
   border-radius: 20px;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 770px) {
   .weather {
     padding: 1em;
 
@@ -150,8 +199,13 @@ input:checked + .slider:before {
       align-items: center;
 
       .listItem {
-        width: 70%;
+        width: 60%;
         margin-bottom: 1em;
+
+        .iconSvg {
+          width: 150px;
+          height: auto;
+        }
       }
     }
 
@@ -162,5 +216,26 @@ input:checked + .slider:before {
         margin: 1em auto;
       }
     }
+
+    .dataChanger {
+      .dataInputs {
+        flex-direction: column;
+
+        .dataAdder {
+          margin: 10px 0;
+        }
+      }
+    }
   }
+}
+
+@media only screen and (min-width: 550px) and (max-width: 769px)  {
+  .weather {
+    .weatherList{
+      .listItem {
+        width: 40%;
+      }
+    }
+  }
+
 }

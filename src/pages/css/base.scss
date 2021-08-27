@@ -21,6 +21,11 @@ body {
 .wrapper {
   max-width: 1024px;
   margin: 0 auto;
+
+  .appNameDiv {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 @mixin bgImages($height, $left, $right, $top, $bottom, $rot) {
