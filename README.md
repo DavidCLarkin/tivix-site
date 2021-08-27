@@ -1,4 +1,3 @@
-README.md
 <h1>Weather App</h1>
 Small weather app coding test for Tivix. Made using the OpenWeather API, calling 5 day forcast and displaying in the frontend of a single page application.
 <br></br>
